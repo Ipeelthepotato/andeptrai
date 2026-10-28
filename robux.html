@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luyện Đúng – Sai | Tin học 12 Giữa kỳ 1</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --correct: #16a34a;
+      --wrong: #dc2626;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --stem-bg: #f1f5f9;
+      --option-bg: #f8fafc;
+      --score-bg: #ffffff;
+      --header-grad: linear-gradient(135deg, #1e40af, #3b82f6);
+      --badge-bg: #dbeafe;
+      --badge-text: #1e40af;
+      --correct-bg: #f0fdf4;
+      --correct-border: #86efac;
+      --wrong-bg: #fef2f2;
+      --wrong-border: #fca5a5;
+      --opt-correct-bg: #dcfce7;
+      --opt-wrong-bg: #fee2e2;
+      --btn-border: #cbd5e1;
+      --shadow: rgba(0,0,0,0.06);
+      --header-shadow: rgba(37, 99, 235, 0.25);
+    }
+
+    [data-theme="dark"] {
+      --primary: #3b82f6;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --stem-bg: #0f172a;
+      --option-bg: #0f172a;
+      --score-bg: #1e293b;
+      --header-grad: linear-gradient(135deg, #1e3a8a, #2563eb);
+      --badge-bg: #1e3a8a;
+      --badge-text: #93c5fd;
+      --correct-bg: #052e16;
+      --correct-border: #166534;
+      --wrong-bg: #450a0a;
+      --wrong-border: #991b1b;
+      --opt-correct-bg: #14532d;
+      --opt-wrong-bg: #7f1d1d;
+      --btn-border: #475569;
+      --shadow: rgba(0,0,0,0.3);
+      --header-shadow: rgba(37, 99, 235, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+      transition: background 0.25s, color 0.25s;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 24px;
+      background: var(--header-grad);
+      color: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px var(--header-shadow);
+      position: relative;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    header p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.08);
+    }
+    .score-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--score-bg);
+      padding: 14px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px var(--shadow);
+      font-weight: 600;
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      border: 1px solid var(--border);
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .score-bar .result {
+      font-size: 1.1rem;
+    }
+    .question-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, background 0.25s;
+    }
+    .question-card.checked-correct {
+      border-color: var(--correct-border);
+      background: var(--correct-bg);
+    }
+    .question-card.checked-wrong {
+      border-color: var(--wrong-border);
+      background: var(--wrong-bg);
+    }
+    .q-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .q-title .badge {
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 0.8rem;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .stem {
+      background: var(--stem-bg);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      border-left: 4px solid var(--primary);
+      color: var(--text);
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: var(--option-bg);
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .option:hover {
+      background: var(--stem-bg);
+    }
+    .option.correct-ans {
+      background: var(--opt-correct-bg);
+      border-color: var(--correct-border);
+    }
+    .option.wrong-ans {
+      background: var(--opt-wrong-bg);
+      border-color: var(--wrong-border);
+    }
+    .option-label {
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 22px;
+    }
+    .option-text {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+    .choices {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .choices label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--btn-border);
+      background: var(--card);
+      color: var(--text);
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .choices label:hover {
+      border-color: var(--primary);
+    }
+    .choices input {
+      display: none;
+    }
+    .choices label:has(input[value="D"]:checked) {
+      background: var(--correct);
+      border-color: var(--correct);
+      color: white;
+    }
+    .choices label:has(input[value="S"]:checked) {
+      background: var(--wrong);
+      border-color: var(--wrong);
+      color: white;
+    }
+    .feedback {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 4px;
+      display: none;
+    }
+    .feedback.show {
+      display: block;
+    }
+    .feedback.ok { color: var(--correct); }
+    .feedback.err { color: var(--wrong); }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 28px 0 16px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-check {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    .btn-check:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37,99,235,0.4);
+    }
+    .btn-reset {
+      background: var(--card);
+      color: var(--text);
+      border: 1.5px solid var(--btn-border);
+    }
+    .btn-reset:hover {
+      background: var(--stem-bg);
+    }
+    .btn-show {
+      background: #0f172a;
+      color: white;
+    }
+    [data-theme="dark"] .btn-show {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .summary {
+      text-align: center;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 14px;
+      margin-top: 12px;
+      display: none;
+      box-shadow: 0 2px 8px var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .summary.show {
+      display: block;
+    }
+    .summary .big-score {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 600px) {
+      .option {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .choices {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .theme-toggle {
+        top: 12px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="theme-toggle" id="themeToggle" title="Đổi giao diện" aria-label="Đổi theme">🌙</button>
+      <h1>Luyện tập Đúng – Sai</h1>
+      <p>Tin học 12 – Ôn tập giữa kỳ 1</p>
+    </header>
+
+    <div class="score-bar">
+      <div>Đã làm: <span id="doneCount">0</span>/64</div>
+      <div class="result" id="liveScore">Điểm: —</div>
+    </div>
+
+    <div id="quiz"></div>
+
+    <div class="actions">
+      <button class="btn-check" onclick="checkAll()">Kiểm tra đáp án</button>
+      <button class="btn-show" onclick="showAnswers()">Hiện đáp án chuẩn</button>
+      <button class="btn-reset" onclick="resetAll()">Làm lại</button>
+    </div>
+
+    <div class="summary" id="summary">
+      <div class="big-score" id="finalScore">0/64</div>
+      <p id="finalText"></p>
+    </div>
+
+    <footer>
+      Luyện tập theo đáp án chuẩn · Tin học 12
+    </footer>
+  </div>
+
+  <script>
+    // Theme
+    const themeToggle = document.getElementById('themeToggle');
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', theme);
+    }
+    // Load saved theme or system preference
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      setTheme(saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme('dark');
+    } else {
+      setTheme('light');
+    }
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    const answers = {
+      1: ['D','S','D','D'],
+      2: ['S','D','D','S'],
+      3: ['S','S','D','S'],
+      4: ['S','D','S','S'],
+      5: ['D','S','D','D'],
+      6: ['D','S','D','S'],
+      7: ['S','D','D','S'],
+      8: ['D','D','S','D'],
+      9: ['S','S','D','D'],
+      10: ['D','S','D','D'],
+      11: ['D','S','S','D'],
+      12: ['S','S','S','D'],
+      13: ['S','S','S','D'],
+      14: ['D','S','D','S'],
+      15: ['S','D','D','D'],
+      16: ['D','D','D','S']
+    };
+
+    const questions = [
+      {
+        id: 1,
+        stem: "AI là các hệ thống do con người xây dựng nhằm giúp máy tính có thể thực hiện các hành vi thông minh như con người.",
+        options: [
+          "Theo chức năng có thể chia AI thành hai loại chính là AI hẹp và AI tổng quát.",
+          "Robot Atlas của hãng Honda là robot hình người đầu tiên trên thế giới được tích hợp một loạt ứng dụng AI như tự động điều khiển, nhận dạng hình ảnh, nhận dạng tiếng nói.",
+          "Khả năng nhận thức là khả năng tìm ra cách giải quyết các tình huống phức tạp dựa trên thông tin và tri thức.",
+          "Công nghệ nhận dạng chữ viết tay được sử dụng rộng rãi trong quá trình xử lí hoá đơn và các tài liệu khác trong giao dịch thương mại điện tử, tự động hoá quy trình nhập dữ liệu."
+        ]
+      },
+      {
+        id: 2,
+        stem: "Trong một chuyến dã ngoại, bạn Linh có mang theo một chiếc loa cầm tay có kết nối Bluetooth. Một bạn trong nhóm đã sử dụng điện thoại thông minh để kết nối với loa phát nhạc.",
+        options: [
+          "Khi điện thoại hết pin thì loa sẽ bị tắt nguồn.",
+          "Điện thoại cần bật chế độ Bluetooth trong suốt quá trình phát nhạc.",
+          "Cần lựa chọn loa tương ứng trong danh sách thiết bị Bluetooth trên điện thoại để kết nối.",
+          "Nếu trên điện thoại mở một đoạn video, loa sẽ không phát âm thanh được."
+        ]
+      },
+      {
+        id: 3,
+        stem: "Trong một trường học có 06 phòng tổ chuyên môn, mỗi phòng lắp 02 máy tính để bàn và 01 máy in được kết nối với 01 cổng Hub. Các Hub này được kết nối với nhau thông qua một Switch trung tâm.",
+        options: [
+          "Có thể dùng cáp quang để kết nối giữa máy tính và Hub.",
+          "Nên sử dụng Switch thay thế cho Hub để tiết kiệm chi phí.",
+          "Cấu trúc mạng trong mỗi phòng là cấu trúc hình sao.",
+          "Máy tính trong phòng này không thể chia sẻ thư mục với máy tính ở phòng khác."
+        ]
+      },
+      {
+        id: 4,
+        stem: "Thiết bị mạng là các thiết bị có khả năng kết nối với nhau và cho phép kết nối các máy tính hoặc các thiết bị thông minh để tạo ra hệ thống mạng máy tính.",
+        options: [
+          "Điểm khác nhau của Switch và Hub nằm ở số lượng cổng của mỗi thiết bị.",
+          "Thông thường Router của các mạng gia đình chỉ có một cổng WAN kết nối đến nhà cung cấp dịch vụ Internet mà không cần phải định tuyến.",
+          "Việc chuyển đổi tín hiệu dạng số sang dạng tương tự hoặc dạng tín hiệu nào đó phù hợp để truyền qua đường truyền mạng gọi là giải điều chế xung (Demodulation).",
+          "Khi kết nối máy tính với các thiết bị mạng, cần cắm một đầu giắc của cáp tín hiệu vào cổng VJ45 của máy tính."
+        ]
+      },
+      {
+        id: 5,
+        stem: "Các thiết bị mạng đóng vai trò quan trọng trong việc xây dựng và vận hành mạng máy tính, giúp các thiết bị có thể kết nối, truyền tải dữ liệu, chia sẻ tài nguyên và truy cập Internet.",
+        options: [
+          "Router có thể chia sẻ kết nối Internet cho nhiều máy.",
+          "Hub truyền dữ liệu thông minh, chỉ đến máy đích.",
+          "Switch giúp giảm va chạm tín hiệu trong mạng LAN.",
+          "Modem giúp kết nối mạng LAN với Internet."
+        ]
+      },
+      {
+        id: 6,
+        stem: "Trí tuệ nhân tạo (AI) đang được ứng dụng mạnh mẽ trong lĩnh vực y tế, giúp bác sĩ phân tích hình ảnh, dự đoán bệnh, hỗ trợ chẩn đoán và ra quyết định điều trị.",
+        options: [
+          "AI có thể hỗ trợ bác sĩ phát hiện bệnh sớm hơn.",
+          "AI luôn chính xác hơn con người.",
+          "AI cần dữ liệu huấn luyện để hoạt động hiệu quả.",
+          "AI không thể học thêm từ dữ liệu mới."
+        ]
+      },
+      {
+        id: 7,
+        stem: "Học trực tuyến là hình thức học tập phổ biến hiện nay, đòi hỏi học sinh cần có thái độ tích cực, ý thức tự giác và ứng xử văn minh trong không gian mạng.",
+        options: [
+          "Học sinh cần tắt camera để tiết kiệm mạng.",
+          "Cần tôn trọng và lắng nghe khi người khác trình bày.",
+          "Không nên chia sẻ đường link lớp học cho người lạ.",
+          "Có thể gửi tin nhắn riêng không liên quan đến bài học."
+        ]
+      },
+      {
+        id: 8,
+        stem: "Mạng máy tính giúp kết nối nhiều thiết bị với nhau để chia sẻ dữ liệu, thông tin và tài nguyên. Các mạng có thể được thiết kế theo nhiều mô hình khác nhau nhằm đáp ứng nhu cầu sử dụng.",
+        options: [
+          "Cấu trúc hình sao có một thiết bị trung tâm kết nối các máy.",
+          "Trong mạng vòng, các máy được kết nối nối tiếp nhau.",
+          "Mạng LAN chỉ sử dụng kết nối không dây.",
+          "Các máy tính trong cùng LAN có thể chia sẻ tài nguyên."
+        ]
+      },
+      {
+        id: 9,
+        stem: "Nhiều lĩnh vực khoa học, công nghệ và đời sống đã và đang nhận được rất nhiều lợi ích từ sự phát triển của AI.",
+        options: [
+          "Các chuyên gia y tế khẳng định phần mềm IBM Watson for Oncology đã góp phần nâng cao hiệu quả điều trị bệnh gan.",
+          "Hệ thống nhận dạng chữ viết tay là một thành tựu của xử lí ngôn ngữ tự nhiên trong AI.",
+          "Trong nông nghiệp, AI được sử dụng trong các trang trại thông minh để theo dõi những yếu tố có ảnh hưởng trực tiếp tới hiệu quả nuôi trồng.",
+          "Trong lĩnh vực khoa học xã hội và nhân văn, AI được sử dụng để mô phỏng và mô hình hoá nhiều hiện tượng xã hội và nhân học."
+        ]
+      },
+      {
+        id: 10,
+        stem: "Sự phát triển của AI đã và đang diễn ra với tốc độ nhanh chóng, có tiềm năng cách mạng hoá nhiều lĩnh vực khoa học và đời sống nhưng cũng kéo theo những nguy cơ cần được cảnh báo.",
+        options: [
+          "ChatGPT là một ví dụ điển hình của AI tạo sinh.",
+          "AI tạo sinh tập trung vào việc nghiên cứu làm cho máy tính có khả năng học từ dữ liệu thu được trong quá trình hoạt động để tự hoàn thiện và nâng cao năng lực nhận thức.",
+          "AI có khả năng tự động hoá nhiều công việc, điều này làm tăng mối lo ngại về quyền riêng tư có khả năng bị lạm dụng.",
+          "Những quyết định không chính xác do AI đưa ra có thể gây nguy hại trực tiếp cho con người, ví dụ chẩn đoán sai về tình trạng bệnh tật hay ra quyết định tấn công các mục tiêu dân sự trong xung đột vũ trang,…"
+        ]
+      },
+      {
+        id: 11,
+        stem: "Máy tính (kể cả các thiết bị di động) có thể kết nối vào mạng bằng cáp tín hiệu hoặc qua sóng Wi-Fi.",
+        options: [
+          "Wi-Fi là chữ viết tắt của cụm từ Wireless Fidelity.",
+          "Hầu hết các máy tính để bàn đều có sẵn khả năng kết nối Wi-Fi như máy tính xách tay hay điện thoại thông minh.",
+          "Để máy tính trong LAN có thể giao tiếp với Internet thì chỉ cần cắm cáp mạng UTP vào cổng RJ45 của máy tính.",
+          "Muốn kết nối thiết bị di động vào LAN bằng một trạm thu phát Wi-Fi được bảo mật, ta cần gõ đúng mật khẩu của trạm thu phát Wi-Fi đó."
+        ]
+      },
+      {
+        id: 12,
+        stem: "Thiết bị mạng đảm bảo kết nối các máy tính, thiết bị thông minh,… tạo thành mạng máy tính.",
+        options: [
+          "Wi-Fi là thiết bị kết nối không dây trong mạng cục bộ.",
+          "Khi máy tính gửi dữ liệu qua một cổng của switch, tín hiệu sẽ được gửi đến tất cả các cổng còn lại.",
+          "Mỗi router có một số cổng có thể kết nối trực tiếp vào LAN gọi là cổng LAN.",
+          "Modem quay số (dial-up) được sử dụng rất phổ biến để kết nối Internet tốc độ cao trước khi cáp quang được dùng rộng rãi."
+        ]
+      },
+      {
+        id: 13,
+        stem: "Hai giao thức IP và TCP xác định cách thức kết nối và trao đổi dữ liệu có tính đặc thù của Internet.",
+        options: [
+          "Địa chỉ IP giống với địa chỉ MAC.",
+          "Mỗi địa chỉ IP là một số 4 bit.",
+          "Giao thức TCP chỉ đảm bảo chuyển dữ liệu từ mạng này đến mạng kia mà không đảm bảo chuyển dữ liệu đến một ứng dụng cụ thể trên một máy cụ thể.",
+          "Việc tách dữ liệu thành nhiều gói cho phép nhiều cuộc truyền khác nhau có thể được thực hiện xen kẽ nhau trên cùng một đường truyền vật lí giúp tận dụng được đường truyền."
+        ]
+      },
+      {
+        id: 14,
+        stem: "Tất cả các hoạt động truyền thông trên mạng đều cần có giao thức giúp việc gửi, nhận dữ liệu chính xác, tin cậy và hiệu quả.",
+        options: [
+          "Giao thức mạng còn được gọi là giao thức truyền thông.",
+          "DNS là giao thức truyền tải siêu văn bản.",
+          "Các gói tin gửi đi trên Internet luôn phải được gán địa chỉ IP của máy tính gửi và máy tính nhận.",
+          "Giao thức TCP quy định cách thiết lập địa chỉ cho các thiết bị tham gia mạng và cách dẫn đường các gói dữ liệu theo địa chỉ từ thiết bị gửi đến thiết bị nhận."
+        ]
+      },
+      {
+        id: 15,
+        stem: "Trong bối cảnh hội nhập toàn cầu hiện nay, sự bùng nổ của công nghệ thông tin và truyền thông đã góp phần thay đổi phương thức giao tiếp trong xã hội.",
+        options: [
+          "Không gian mạng cho phép con người giao tiếp với nhau thông qua các phần mềm và dịch vụ giao tiếp trực tuyến như mạng xã hội, thư giấy, ứng dụng nhắn tin, gọi điện thoại video,…",
+          "Giao tiếp trực tuyến có thể được thực hiện mọi nơi, mọi lúc, miễn là có kết nối mạng.",
+          "Giao tiếp trong không gian mạng có thể gây khó khăn trong việc truyền đạt cảm xúc và dẫn đến những hiểu lầm không đáng có.",
+          "“Tránh gửi nội dung thư rác hoặc quảng cáo không liên quan đến nội dung chính của cuộc trò chuyện” thể hiện khía cạnh tôn trọng trong việc ứng xử nhân văn trong không gian mạng."
+        ]
+      },
+      {
+        id: 16,
+        stem: "Bình đang xây dựng trang cá nhân trên mạng xã hội để thể hiện sở thích nhiếp ảnh của mình. Anh thường xuyên đăng ảnh đẹp do mình chụp, nhưng đôi khi cũng chia sẻ lại những tin tức chưa kiểm chứng vì thấy chúng có vẻ thú vị. Gần đây, có người bình luận chê bai tác phẩm của Bình, anh đã tức giận và dùng những lời lẽ khiếm nhã để đáp trả.",
+        options: [
+          "Việc xây dựng trang cá nhân trên mạng xã hội là một hoạt động trong không gian mạng.",
+          "Hành động đáp trả bằng lời lẽ khiếm nhã của Bình vi phạm nguyên tắc \"Lịch sự\".",
+          "Việc Bình chia sẻ tin tức chưa kiểm chứng có thể gây ra hậu quả tiêu cực và đi ngược lại với ứng xử nhân văn.",
+          "Chỉ cần hình ảnh đẹp, trang cá nhân của Bình chắc chắn sẽ tạo ấn tượng tốt mà không cần quan tâm đến cách anh ấy ứng xử."
+        ]
+      }
+    ];
+
+    const letters = ['a', 'b', 'c', 'd'];
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz');
+      container.innerHTML = '';
+      questions.forEach(q => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `q${q.id}`;
+        let html = `
+          <div class="q-title">
+            <span class="badge">Câu ${q.id}</span>
+          </div>
+          <div class="stem">${q.stem}</div>
+        `;
+        q.options.forEach((opt, i) => {
+          html += `
+            <div class="option" id="opt-${q.id}-${i}">
+              <span class="option-label">${letters[i]})</span>
+              <div class="option-text">${opt}</div>
+              <div class="choices">
+                <label>
+                  <input type="radio" name="q${q.id}_${i}" value="D" onchange="updateDone()">
+                  <span>Đúng</span>
+                </label>
+                <label>
+                  <input type="radio" name="q${q.id}_${i}" value="S" onchange="updateDone()">
+                  <span>Sai</span>
+                </label>
+              </div>
+              <div class="feedback" id="fb-${q.id}-${i}"></div>
+            </div>
+          `;
+        });
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+    }
+
+    function updateDone() {
+      let count = 0;
+      questions.forEach(q => {
+        for (let i = 0; i < 4; i++) {
+          if (document.querySelector(`input[name="q${q.id}_${i}"]:checked`)) count++;
+        }
+      });
+      document.getElementById('doneCount').textContent = count;
+    }
+
+    function checkAll() {
+      let correct = 0;
+      let total = 64;
+      questions.forEach(q => {
+        let qCorrect = 0;
+        for (let i = 0; i < 4; i++) {
+          const selected = document.querySelector(`input[name="q${q.id}_${i}"]:checked`);
+          const fb = document.getElementById(`fb-${q.id}-${i}`);
+          const optEl = document.getElementById(`opt-${q.id}-${i}`);
+          const ans = answers[q.id][i];
+          optEl.classList.remove('correct-ans', 'wrong-ans');
+          if (!selected) {
+            fb.textContent = 'Chưa chọn';
+            fb.className = 'feedback show err';
+            continue;
+          }
+          if (selected.value === ans) {
+            correct++;
+            qCorrect++;
+            optEl.classList.add('correct-ans');
+            fb.textContent = '✓ Đúng';
+            fb.className = 'feedback show ok';
+          } else {
+            optEl.classList.add('wrong-ans');
+            fb.textContent = `✗ Sai (Đáp án: ${ans === 'D' ? 'Đúng' : 'Sai'})`;
+            fb.className = 'feedback show err';
+          }
+        }
+        const card = document.getElementById(`q${q.id}`);
+        card.classList.remove('checked-correct', 'checked-wrong');
+        if (qCorrect === 4) card.classList.add('checked-correct');
+        else card.classList.add('checked-wrong');
+      });
+      document.getElementById('liveScore').textContent = `Điểm: ${correct}/${total}`;
+      const summary = document.getElementById('summary');
+      summary.classList.add('show');
+      document.getElementById('finalScore').textContent = `${correct}/${total}`;
+      const percent = Math.round((correct / total) * 100);
+      let msg = '';
+      if (percent >= 90) msg = 'Xuất sắc! Bạn nắm rất vững phần này.';
+      else if (percent >= 70) msg = 'Khá tốt! Còn vài chỗ cần ôn lại.';
+      else if (percent >= 50) msg = 'Trung bình. Hãy xem lại những câu sai.';
+      else msg = 'Cần ôn kỹ hơn. Hãy đọc lại lý thuyết và làm lại.';
+      document.getElementById('finalText').textContent = msg;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAnswers() {
+      questions.forEach(q => {
+        for (let i = 0; i < 4; i++) {
+          const ans = answers[q.id][i];
+          const radios = document.querySelectorAll(`input[name="q${q.id}_${i}"]`);
+          radios.forEach(r => {
+            r.checked = (r.value === ans);
+          });
+          const fb = document.getElementById(`fb-${q.id}-${i}`);
+          fb.textContent = `Đáp án: ${ans === 'D' ? 'Đúng' : 'Sai'}`;
+          fb.className = 'feedback show ok';
+          document.getElementById(`opt-${q.id}-${i}`).classList.add('correct-ans');
+        }
+        document.getElementById(`q${q.id}`).classList.add('checked-correct');
+      });
+      updateDone();
+      document.getElementById('liveScore').textContent = 'Đáp án chuẩn đã hiện';
+    }
+
+    function resetAll() {
+      questions.forEach(q => {
+        for (let i = 0; i < 4; i++) {
+          const radios = document.querySelectorAll(`input[name="q${q.id}_${i}"]`);
+          radios.forEach(r => r.checked = false);
+          const fb = document.getElementById(`fb-${q.id}-${i}`);
+          fb.className = 'feedback';
+          fb.textContent = '';
+          document.getElementById(`opt-${q.id}-${i}`).classList.remove('correct-ans', 'wrong-ans');
+        }
+        const card = document.getElementById(`q${q.id}`);
+        card.classList.remove('checked-correct', 'checked-wrong');
+      });
+      document.getElementById('doneCount').textContent = '0';
+      document.getElementById('liveScore').textContent = 'Điểm: —';
+      document.getElementById('summary').classList.remove('show');
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>
